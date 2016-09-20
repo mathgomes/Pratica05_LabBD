@@ -108,11 +108,8 @@ public class JanelaPrincipal {
 
         bd = new DBFuncionalidades(jtAreaDeStatus);
         if (bd.conectar()) {
-            bd.displayTableNames(jc);
-        }
-        try {
-            bd.getStmt().close();
-        } catch (SQLException ex) {
+            System.out.println("Hello world!");
+            bd.DDLLogin();
         }
     }
 
