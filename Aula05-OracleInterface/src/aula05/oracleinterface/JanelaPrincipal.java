@@ -5,23 +5,11 @@
 package aula05.oracleinterface;
 
 import java.awt.BorderLayout;
-import java.awt.ComponentOrientation;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.table.TableColumn;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -29,16 +17,17 @@ import javax.swing.table.TableColumn;
  */
 public class JanelaPrincipal {
 
-    JFrame j;
-    JPanel pPainelDeCima;
-    JPanel pPainelDeBaixo;
-    JComboBox jc;
-    JTextArea jtAreaDeStatus;
-    JTabbedPane tabbedPane;
-    JPanel pPainelDeExibicaoDeDados;
-    JTable jt;
-    JPanel pPainelDeInsecaoDeDados;
-    DBFuncionalidades bd;
+    private JFrame j;
+    private JPanel pPainelDeCima;
+    private JPanel pPainelDeBaixo;
+    private JComboBox jc;
+    private JTextArea jtAreaDeStatus;
+    private JTabbedPane tabbedPane;
+    private JPanel pPainelDeExibicaoDeDados;
+    private JTable jt;
+    private JPanel pPainelDeInsecaoDeDados;
+    private DBFuncionalidades bd;
+    private final DefaultTableModel tableModel = new DefaultTableModel();
 
     public void ExibeJanelaPrincipal() {
         /*Janela*/
@@ -68,8 +57,10 @@ public class JanelaPrincipal {
         pPainelDeExibicaoDeDados = new JPanel();
         pPainelDeExibicaoDeDados.setLayout(new GridLayout(1, 1));
         tabbedPane.add(pPainelDeExibicaoDeDados, "Exibição");
+
         /*Table de exibição*/
         int nColunas = 3;
+        /*
         String colunas[] = new String[nColunas];
         colunas[0] = "Coluna1";
         colunas[1] = "Coluna2";
@@ -89,6 +80,8 @@ public class JanelaPrincipal {
         dados[3][1] = "d13";
         dados[3][2] = "d23";
         jt = new JTable(dados, colunas);
+        */
+        jt = new JTable(tableModel);
         JScrollPane jsp = new JScrollPane(jt);
         pPainelDeExibicaoDeDados.add(jsp);
 
@@ -108,17 +101,27 @@ public class JanelaPrincipal {
 
         bd = new DBFuncionalidades(jtAreaDeStatus);
         if (bd.conectar()) {
-            System.out.println("Hello world!");
-            bd.DDLLogin();
+            //System.out.println("Hello world!");
+            bd.displayTableNames(jc);
+            //bd.DDLLogin();
+
+
         }
     }
 
     private void DefineEventos() {
-        jc.addActionListener(
-                new ActionListener() {
+        jc.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
-                JComboBox jcTemp = (JComboBox) e.getSource();
-                jtAreaDeStatus.setText((String) jcTemp.getSelectedItem());
+                new SwingWorker<Void, Void>() {
+                    @Override
+                    protected Void doInBackground() throws Exception {
+                        JComboBox jcTemp = (JComboBox) e.getSource();
+                        jtAreaDeStatus.setText((String) jcTemp.getSelectedItem());
+                        bd.loadDataToTable(tableModel,(String) jcTemp.getSelectedItem());
+                        return null;
+                    }
+                }.execute();
             }
         });
     }
