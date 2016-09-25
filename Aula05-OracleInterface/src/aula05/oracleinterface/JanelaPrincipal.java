@@ -4,10 +4,11 @@
  */
 package aula05.oracleinterface;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Objects;
+import java.util.Vector;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
@@ -21,6 +22,7 @@ public class JanelaPrincipal {
     private JPanel pPainelDeCima;
     private JPanel pPainelDeBaixo;
     private JComboBox jc;
+    private JButton insertButton;
     private JTextArea jtAreaDeStatus;
     private JTabbedPane tabbedPane;
     private JPanel pPainelDeExibicaoDeDados;
@@ -28,6 +30,7 @@ public class JanelaPrincipal {
     private JPanel pPainelDeInsecaoDeDados;
     private DBFuncionalidades bd;
     private final DefaultTableModel tableModel = new DefaultTableModel();
+    private Vector<Pair<JTextField,String>> tupla;
 
     public void ExibeJanelaPrincipal() {
         /*Janela*/
@@ -40,7 +43,9 @@ public class JanelaPrincipal {
         pPainelDeCima = new JPanel();
         j.add(pPainelDeCima, BorderLayout.NORTH);
         jc = new JComboBox();
+        insertButton = new JButton("Inserir nova tupla");
         pPainelDeCima.add(jc);
+        pPainelDeCima.add(insertButton);
 
         /*Painel da parte inferior (south) - com área de status*/
         pPainelDeBaixo = new JPanel();
@@ -59,44 +64,15 @@ public class JanelaPrincipal {
         tabbedPane.add(pPainelDeExibicaoDeDados, "Exibição");
 
         /*Table de exibição*/
-        int nColunas = 3;
-        /*
-        String colunas[] = new String[nColunas];
-        colunas[0] = "Coluna1";
-        colunas[1] = "Coluna2";
-        colunas[2] = "Coluna3";
-        int nTuplas = 4;
-        String dados[][] = new String[nTuplas][nColunas];
-        dados[0][0] = "d00";
-        dados[0][1] = "d10";
-        dados[0][2] = "d20";
-        dados[1][0] = "d10";
-        dados[1][1] = "d11";
-        dados[1][2] = "d21";
-        dados[2][0] = "d20";
-        dados[2][1] = "d12";
-        dados[2][2] = "d22";
-        dados[3][0] = "d30";
-        dados[3][1] = "d13";
-        dados[3][2] = "d23";
-        jt = new JTable(dados, colunas);
-        */
         jt = new JTable(tableModel);
         JScrollPane jsp = new JScrollPane(jt);
         pPainelDeExibicaoDeDados.add(jsp);
 
         /*Tab de inserção*/
         pPainelDeInsecaoDeDados = new JPanel();
-        pPainelDeInsecaoDeDados.setLayout(new GridLayout(nColunas, 2));
-        pPainelDeInsecaoDeDados.add(new JLabel("Coluna1"));
-        pPainelDeInsecaoDeDados.add(new JTextField("Digite aqui"));
-        pPainelDeInsecaoDeDados.add(new JLabel("Coluna2"));
-        pPainelDeInsecaoDeDados.add(new JTextField("Digite aqui"));
-        pPainelDeInsecaoDeDados.add(new JLabel("Coluna3"));
-        pPainelDeInsecaoDeDados.add(new JTextField("Digite aqui"));
         tabbedPane.add(pPainelDeInsecaoDeDados, "Inserção");
 
-        this.DefineEventos();
+
         j.setVisible(true);
 
         bd = new DBFuncionalidades(jtAreaDeStatus);
@@ -107,21 +83,28 @@ public class JanelaPrincipal {
 
 
         }
+        this.DefineEventos();
     }
 
     private void DefineEventos() {
         jc.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new SwingWorker<Void, Void>() {
-                    @Override
-                    protected Void doInBackground() throws Exception {
-                        JComboBox jcTemp = (JComboBox) e.getSource();
-                        jtAreaDeStatus.setText((String) jcTemp.getSelectedItem());
-                        bd.loadDataToTable(tableModel,(String) jcTemp.getSelectedItem());
-                        return null;
-                    }
-                }.execute();
+                JComboBox jcTemp = (JComboBox) e.getSource();
+                String selected = (String)jcTemp.getSelectedItem();
+                jtAreaDeStatus.setText(selected);
+                bd.loadDataToTable(tableModel,selected);
+                tupla = bd.displayInsertionMenu(pPainelDeInsecaoDeDados,selected);
+                for( Pair<JTextField,String> t : tupla) {
+                    System.out.println(t.getLeft().getText() + ", " + t.getRight());
+                    if(Objects.equals(t.getRight(), "java.lang.String")) System.out.println("it is");
+                }
+            }
+        });
+        insertButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                bd.insertTuple(tupla,(String)jc.getSelectedItem());
             }
         });
     }

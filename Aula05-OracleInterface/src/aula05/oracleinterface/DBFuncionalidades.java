@@ -4,14 +4,15 @@
  */
 package aula05.oracleinterface;
 
+import java.awt.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.*;
+import java.util.Objects;
 import java.util.Vector;
-import javax.swing.JComboBox;
-import javax.swing.JTextArea;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -68,10 +69,12 @@ public class DBFuncionalidades {
             while (rs.next()) {
                 jc.addItem(rs.getString("view_name") + " view");
             }
+            rs.close();
         } catch (SQLException ex) {
             //jtAreaDeStatus.setText("Erro na consulta: \"" + s + "\"");
             jtAreaDeStatus.setText(ex.getMessage());
-        }        
+        }
+
     }
 
     public void loadDataToTable(DefaultTableModel tablemodel, String name) {
@@ -102,6 +105,57 @@ public class DBFuncionalidades {
             jtAreaDeStatus.setText(ex.getMessage());
         }
     }
+
+    public Vector<Pair<JTextField,String>> displayInsertionMenu(JPanel insertPane, String name) {
+
+        try {
+
+            rs = stmt.executeQuery("select * from "+ name);
+            ResultSetMetaData metaData = rs.getMetaData();
+            // Names of columns
+            int columnCount = metaData.getColumnCount();
+
+            insertPane.setLayout(new GridLayout(columnCount, 2));
+            insertPane.removeAll();
+
+            Vector<Pair<JTextField,String>> data = new Vector<>();
+
+            for (int i = 1; i <= columnCount; i++) {
+                JTextField field = new JTextField("Digite o valor da coluna");
+                insertPane.add(new JLabel(metaData.getColumnName(i)));
+                insertPane.add(field);
+                data.add(new Pair<>(field, metaData.getColumnClassName(i)));
+            }
+            return data;
+        } catch (SQLException ex) {
+            jtAreaDeStatus.setText(ex.getMessage());
+        }
+        return null;
+    }
+
+    public void insertTuple(Vector<Pair<JTextField,String>> tupla, String name) {
+
+        String query = "insert into "+ name+ " values (";
+
+        for(Pair<JTextField,String> t : tupla) {
+            if(Objects.equals(t.getRight(), "java.lang.String")) {
+                query += "'"+t.getLeft().getText()+"'"+",";
+            }
+            else if( Objects.equals(t.getRight(), "java.math.BigDecimal")) {
+                query += t.getLeft().getText()+",";
+            }
+        }
+        query = query.substring(0,query.length() - 1) + ")";
+        System.out.println(query);
+
+        try {
+            rs = stmt.executeQuery(query);
+            jtAreaDeStatus.setText("Tupla inserida com sucesso");
+        } catch (SQLException ex) {
+            jtAreaDeStatus.setText(ex.getMessage());
+        }
+
+    }
     public void DDLLogin(){
         String s = "";
         try {
@@ -116,7 +170,7 @@ public class DBFuncionalidades {
                 retorno = stmt.executeQuery(s);
                 System.out.println(retorno.getString("DDL"));
             }
-            
+
         } catch (SQLException ex) {
             //jtAreaDeStatus.setText("Erro na consulta: \"" + s + "\"");
             jtAreaDeStatus.setText(ex.getMessage());
