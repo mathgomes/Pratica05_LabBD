@@ -159,6 +159,7 @@ public class DBFuncionalidades {
     }
     public void DDLLogin(){
         String s = "";
+        ResultSet retorno;
         try {
             PreparedStatement psts = connection.prepareStatement("EXEC dbms_metadata.set_transform_param(dbms_metadata.session_transform,'STORAGE',false)" +
                                                                  "EXEC dbms_metadata.set_transform_param(dbms_metadata.session_transform,'SEGMENT_ATTRIBUTES',false)" +
@@ -166,12 +167,11 @@ public class DBFuncionalidades {
             s = "select table_name from user_tables";
             rs = stmt.executeQuery(s);
             while (rs.next()) {
-                s = "SELECT dbms_metadata.get_ddl('TABLE','" + rs.getString("TABLE_NAME") + "') AS DDL FROM DUAL";
+                s = "SELECT dbms_metadata.get_ddl('TABLE','" + rs.getString(1) + "') AS DDL FROM DUAL";
                 System.out.println(s);
-                ResultSet retorno;
-                retorno = stmt.executeQuery(s);
+                retorno = psts.executeQuery(s);
                 while(retorno.next()){
-                System.out.println(retorno.getString("DDL"));}
+                    System.out.println(retorno.getString(1));}
             }
             
         } catch (SQLException ex) {
