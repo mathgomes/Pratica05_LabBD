@@ -77,6 +77,11 @@ public class DBFuncionalidades {
 
     }
 
+    /**
+     * Carrega o conteudo de uma tabela selecionada para a JTable
+     * @param tablemodel
+     * @param name
+     */
     public void loadDataToTable(DefaultTableModel tablemodel, String name) {
 
         try {
@@ -106,6 +111,12 @@ public class DBFuncionalidades {
         }
     }
 
+    /**
+     * Mostra o menu de inserção com as colunas de cada tabela
+     * @param insertPane O painel de inserção
+     * @param name O nome da tabela a receber uma inserção
+     * @return
+     */
     public Vector<Pair<JTextField,String>> displayInsertionMenu(JPanel insertPane, String name) {
 
         try {
@@ -133,6 +144,11 @@ public class DBFuncionalidades {
         return null;
     }
 
+    /**
+     * Insere uma nova tupla na tabela selecionada pelo JComboBox
+     * @param tupla Par com o nome do atributo e o tipo a ser inserido
+     * @param name O nome da tabela
+     */
     public void insertTuple(Vector<Pair<JTextField,String>> tupla, String name) {
 
         String query = "insert into "+ name+ " values (";

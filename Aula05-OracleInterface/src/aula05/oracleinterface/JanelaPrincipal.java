@@ -97,10 +97,10 @@ public class JanelaPrincipal {
                 tupla = bd.displayInsertionMenu(pPainelDeInsecaoDeDados,selected);
                 for( Pair<JTextField,String> t : tupla) {
                     System.out.println(t.getLeft().getText() + ", " + t.getRight());
-                    if(Objects.equals(t.getRight(), "java.lang.String")) System.out.println("it is");
                 }
             }
         });
+        // ao se clicar no botão de inserção, chama o método para inserir os dados digitados na interface
         insertButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

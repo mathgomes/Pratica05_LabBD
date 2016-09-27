@@ -1,5 +1,10 @@
 package aula05.oracleinterface;
 
+/**
+ * Classe representando um par generico, como se fosse a classe Pair em C++
+ * @param <L> o elemento esquerdo
+ * @param <R> o elemento direito
+ */
 public class Pair<L,R> {
 
     private final L left;
