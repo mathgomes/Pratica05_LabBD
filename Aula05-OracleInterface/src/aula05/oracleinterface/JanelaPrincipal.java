@@ -26,7 +26,9 @@ public class JanelaPrincipal {
     private JTextArea jtAreaDeStatus;
     private JTabbedPane tabbedPane;
     private JPanel pPainelDeExibicaoDeDados;
+    private JPanel pPainelDeLogin;
     private JTable jt;
+    private JTextArea jtDDL;
     private JPanel pPainelDeInsecaoDeDados;
     private DBFuncionalidades bd;
     private final DefaultTableModel tableModel = new DefaultTableModel();
@@ -67,6 +69,13 @@ public class JanelaPrincipal {
         jt = new JTable(tableModel);
         JScrollPane jsp = new JScrollPane(jt);
         pPainelDeExibicaoDeDados.add(jsp);
+        
+        /*Tab de login*/
+        pPainelDeLogin = new JPanel();
+        pPainelDeLogin.setLayout(new GridLayout(1, 1));
+        tabbedPane.add(pPainelDeLogin, "Login");
+        jtDDL = new JTextArea();
+        pPainelDeLogin.add(jtDDL);
 
         /*Tab de inserção*/
         pPainelDeInsecaoDeDados = new JPanel();
@@ -79,9 +88,7 @@ public class JanelaPrincipal {
         if (bd.conectar()) {
             //System.out.println("Hello world!");
             bd.displayTableNames(jc);
-            //bd.DDLLogin();
-
-
+            jtDDL.setText(bd.DDLLogin()); 
         }
         this.DefineEventos();
     }

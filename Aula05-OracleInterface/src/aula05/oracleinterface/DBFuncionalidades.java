@@ -173,8 +173,9 @@ public class DBFuncionalidades {
         }
 
     }
-    public void DDLLogin(){
+    public String DDLLogin(){
         String s = "";
+        String saida = "";
         ResultSet retorno;
         try {
             PreparedStatement psts = connection.prepareStatement("EXEC dbms_metadata.set_transform_param(dbms_metadata.session_transform,'STORAGE',false)" +
@@ -187,13 +188,16 @@ public class DBFuncionalidades {
                 System.out.println(s);
                 retorno = psts.executeQuery(s);
                 while(retorno.next()){
-                    System.out.println(retorno.getString(1));}
+                   // System.out.println(retorno.getString(1));
+                    saida = saida + "\n" + retorno.getString(1); }
             }
             
         } catch (SQLException ex) {
             //jtAreaDeStatus.setText("Erro na consulta: \"" + s + "\"");
             jtAreaDeStatus.setText(ex.getMessage());
-        }        
+            saida = ex.getMessage();
+        }    
+        return saida;
     }
 
   }
