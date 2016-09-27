@@ -30,7 +30,8 @@ public class DBFuncionalidades {
     public DBFuncionalidades(JTextArea jtaTextArea){
         jtAreaDeStatus = jtaTextArea;
         System.out.println("Hello world!");
-        //DDLLogin();
+        conectar();
+        DDLLogin();
     }
 
     public boolean conectar(){       
@@ -174,19 +175,21 @@ public class DBFuncionalidades {
     }
     public void DDLLogin(){
         String s = "";
+        ResultSet retorno;
         try {
-            PreparedStatement psts = connection.prepareStatement("begin EXEC dbms_metadata.set_transform_param(dbms_metadata.session_transform,'STORAGE',false);" +
-                                                                   "EXEC dbms_metadata.set_transform_param(dbms_metadata.session_transform,'SEGMENT_ATTRIBUTES',false);" +
-                                                                   "EXEC dbms_metadata.set_transform_param(dbms_metadata.session_transform,'SQLTERMINATOR',true); ");
+            PreparedStatement psts = connection.prepareStatement("EXEC dbms_metadata.set_transform_param(dbms_metadata.session_transform,'STORAGE',false)" +
+                                                                 "EXEC dbms_metadata.set_transform_param(dbms_metadata.session_transform,'SEGMENT_ATTRIBUTES',false)" +
+                                                                 "EXEC dbms_metadata.set_transform_param(dbms_metadata.session_transform,'SQLTERMINATOR',true)");
             s = "select table_name from user_tables";
             rs = stmt.executeQuery(s);
             while (rs.next()) {
-                s = "SELECT dbms_metadata.get_ddl('TABLE','" + rs.getString("table_name") + "') AS DDL FROM DUAL;";
-                ResultSet retorno;
-                retorno = stmt.executeQuery(s);
-                System.out.println(retorno.getString("DDL"));
+                s = "SELECT dbms_metadata.get_ddl('TABLE','" + rs.getString(1) + "') AS DDL FROM DUAL";
+                System.out.println(s);
+                retorno = psts.executeQuery(s);
+                while(retorno.next()){
+                    System.out.println(retorno.getString(1));}
             }
-
+            
         } catch (SQLException ex) {
             //jtAreaDeStatus.setText("Erro na consulta: \"" + s + "\"");
             jtAreaDeStatus.setText(ex.getMessage());
